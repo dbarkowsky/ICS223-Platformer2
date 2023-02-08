@@ -21,7 +21,7 @@ public class CubeFactory : MonoBehaviour
                 for (int z = 0; z < 25; z += 5)
                 {
                     // add code to instantiate prefabs here
-                     GameObject newObj = Instantiate(cubePrefab);
+                    GameObject newObj = Instantiate(cubePrefab);
                     newObj.transform.position = new Vector3(x, y, z);
                     newObj.transform.rotation = Quaternion.identity;
                 }
