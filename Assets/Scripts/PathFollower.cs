@@ -13,6 +13,7 @@ public class PathFollower : MonoBehaviour
     private float totalTimeToWP;        // the total time to get from source WP to targetWP
     private float elapsedTimeToWP = 0;  // the elapsed time (sourceWP to targetWP)
     private float speed = 3.0f;         // movement speed
+    private bool platformPaused = false;
 
 
     void Start()
@@ -56,14 +57,28 @@ public class PathFollower : MonoBehaviour
         // calculate percent complete
         float elapsedTimePercentage = elapsedTimeToWP / totalTimeToWP;
 
+        // make speed slower at beginning and end
+        elapsedTimePercentage = Mathf.SmoothStep(0, 1, elapsedTimePercentage);
+
         // move
         transform.position = Vector3.Lerp(sourceWP.position, targetWP.position, elapsedTimePercentage);
 
+        // rotate
+        transform.rotation = Quaternion.Lerp(sourceWP.rotation, targetWP.rotation, elapsedTimePercentage);
+
         // check if we've reached our waypoint (based on time). If so, target the next waypoint
-        if (elapsedTimePercentage >= 1)
+        if (elapsedTimePercentage >= 1 && !platformPaused)
         {
-            TargetNextWaypoint(); 
+            platformPaused = true;
+            StartCoroutine(PausePlatform());
         }
+    }
+
+    IEnumerator PausePlatform()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+        TargetNextWaypoint();
+        platformPaused = false;
     }
 
     private void OnTriggerEnter(Collider other)
